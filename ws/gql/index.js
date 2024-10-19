@@ -1,12 +1,11 @@
 const { ApolloServer, gql } = require('apollo-server');
 
-// In-memory data store
+
 let users = [
   { id: 1, name: 'Alice', age: 30 },
   { id: 2, name: 'Bob', age: 25 },
 ];
 
-// Type definitions (Schema)
 const typeDefs = gql`
   type User {
     id: ID!
@@ -26,7 +25,7 @@ const typeDefs = gql`
   }
 `;
 
-// Resolvers
+
 const resolvers = {
   Query: {
     users: () => users,
@@ -60,13 +59,13 @@ const resolvers = {
   },
 };
 
-// Apollo Server instance
+
 const server = new ApolloServer({
   typeDefs,
   resolvers,
 });
 
-// Start the server
+
 server.listen().then(({ url }) => {
   console.log(`🚀 Server ready at ${url}`);
 });
