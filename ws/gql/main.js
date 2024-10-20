@@ -66,12 +66,15 @@ const resolvers = {
             return current
         },
 
-        deleteUser: (parents, args) => {
-            const current = users.findIndex(user => user.id === parseInt(args.id));
-            users.pop(current);
-            writeData(users);
-            return users
-        }
+        deleteUser: (parent, args) => {
+            const userIndex = users.findIndex(user => user.id === parseInt(args.id));
+            if (userIndex === -1) return null;
+            const deletedUser = users[userIndex];
+            console.log(deletedUser);
+            users.splice(userIndex, 1);
+            writeData(users)
+            return deletedUser;
+          },
     }
 }
 

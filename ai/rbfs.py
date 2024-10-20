@@ -4,13 +4,13 @@ def rbfs(graph, start, f_limit, g_cost, heuristic):
   successors = []
   for (neighbor, cost) in graph[start]:
     g = g_cost + cost
-    f = g + heuristic[neighbor] # f = g + h
+    f = g + heuristic[neighbor]
     successors.append([neighbor, g, f])
 
   if len(successors) == 0: return None, float('inf')
 
   while True:
-    successors.sort(key=lambda x:x[2]) # sort by f (3rd element)
+    successors.sort(key=lambda x:x[2]) 
     best = successors[0]
     if best[0] == "B": return [best[0]], best[2]
 
