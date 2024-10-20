@@ -3,18 +3,32 @@ from collections import defaultdict
 
 def a_star(graph, start, heuristic):
   fringe = PriorityQueue()
-  path = []
-  distance = 0
+  predecessor = {}
+  g_costs = { start: 0 }
+  visited = set()
 
-  fringe.put((heuristic[start] + distance, [start, 0]))
-  while fringe.empty() == False:
-    [currentnode, travelled] = fringe.get()[1]
-    path.append(currentnode)
-    distance += travelled
-    if currentnode == "B": break
-    fringe = PriorityQueue()
-    for [neighbor, gn] in graph[currentnode]:
-      if neighbor not in path: fringe.put((heuristic[neighbor] + gn + distance, [neighbor, gn]))
+  fringe.put((heuristic[start], start, 0))
+  while not fringe.empty():
+    _, currentnode, current_g = fringe.get()
+    if currentnode in visited: continue
+    visited.add(currentnode)
+    if currentnode == "B": return get_path(predecessor, currentnode)
+
+    for neighbor, gn in graph[currentnode]:
+      g_estimate = current_g + gn
+      if neighbor in visited and g_estimate >= g_costs.get(neighbor, float('inf')): continue
+      if g_estimate < g_costs.get(neighbor, float('inf')):
+        g_costs[neighbor] = g_estimate
+        fn = heuristic[neighbor] + g_costs[neighbor]
+        fringe.put((fn, neighbor, g_costs[neighbor]))
+        predecessor[neighbor] = currentnode
+  return None
+
+def get_path(predecessor, currentnode):
+  path = [currentnode]
+  while currentnode in predecessor:
+    currentnode = predecessor[currentnode]
+    path.insert(0, currentnode)
   return path
 
 def add(graph, u, v, cost):
