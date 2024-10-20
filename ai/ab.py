@@ -1,42 +1,31 @@
-import math
+def minimax(nodes, depth, alpha, beta, player, index=0):
+    if depth == 0 or 2*index >= len(nodes): return nodes[index]
 
+    if player == 1:
+        maximum = float('-inf')
+        maximum = max(maximum, minimax(nodes, depth-1, alpha, beta, False, 2*index))
+        alpha = max(alpha, maximum)
+        if beta <= alpha: return maximum
+        maximum = max(maximum, minimax(nodes, depth-1, alpha, beta, False, 2*index+1))
+        alpha = max(alpha, maximum)
+        return maximum
 
-def minimax(node, depth, is_maximizing, alpha, beta):
-
-    if depth == 0 or isinstance(node, int):
-        return node
-
-    if is_maximizing:
-        max_eval = -math.inf
-
-        for child in node:
-            eval = minimax(child, depth - 1, False, alpha, beta)
-            max_eval = max(max_eval, eval)
-            alpha = max(alpha, eval)
-
-            if beta <= alpha:
-                break
-        return max_eval
     else:
-        min_eval = math.inf
+        minimum = float('inf')
+        minimum = min(minimum, minimax(nodes, depth-1, alpha, beta, True, 2*index))
+        beta = min(beta, minimum)
+        if beta <= alpha: return minimum
+        minimum = min(minimum, minimax(nodes, depth-1, alpha, beta, True, 2*index+1))
+        beta = min(beta, minimum)
+        return minimum
 
-        for child in node:
-            eval = minimax(child, depth - 1, True, alpha, beta)
-            min_eval = min(min_eval, eval)
-            beta = min(beta, eval)
+def main():
+    player = int(input("Player 1 or 2? "))
+    depth = int(input("Enter depth of tree: "))
+    nodes = [0 for _ in range(2 ** depth)]
+    for i in range(len(nodes)):
+        nodes[i] = int(input(f"Enter value of terminal node {i+1}: "))
+    best = minimax(nodes, depth, float('-inf'), float('inf'), player)
+    print(f"\nBest for Player {player}: {best}")
 
-            if beta <= alpha:
-                break
-        return min_eval
-
-# Example game tree: a depth-3 tree where leaf nodes represent game outcomes
-game_tree = [
-    [3, 5, 6],
-    [9, 1, 2],
-    [0, -1, -2],      
-    [-6, -4, -3]      # Fourth child of root (for the maximizing player)
-]
-
-# Start the minimax with Alpha-Beta pruning
-result = minimax(game_tree, 3, True, -math.inf, math.inf)
-print("Best outcome for maximizer:", result)
+main()
