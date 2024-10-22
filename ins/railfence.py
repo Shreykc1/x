@@ -20,7 +20,7 @@ def decrypt(ciphertext, depth):
   rows = [[] for _ in range(depth)]
   current = 0
   direction = 'S'
-  for char in ciphertext: # construct empty rails by travesing diagonally
+  for char in ciphertext: # construct empty rails by traversing diagonally
     rows[current].append("*")
     current = current + 1 if direction == 'S' else current - 1
     if current == depth-1 or current == 0:
@@ -43,9 +43,13 @@ def decrypt(ciphertext, depth):
     
   return plaintext
 
-text = input("Enter message: ")
+text = input("Enter message: ").upper()
 depth = int(input("Enter depth: "))
 e = encrypt(text, depth)
 print(f"\nEncrypted message: {e}")
 d = decrypt(e, depth)
 print(f"Decrypted message: {d}") 
+
+# plaintext = MITHIBAI COLLEGE
+# depth = 3
+# ciphertext = MI LIHBICLEETAOG
