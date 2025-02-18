@@ -1,37 +1,45 @@
-import nltk
-from nltk.corpus import stopwords
-from nltk.tokenize import word_tokenize
-import numpy as np
-import pandas as pd
+from collections import defaultdict
 
-nltk.download('punkt_tab')
-nltk.download('stopwords')
+def incidence_matrix(docs):
+    docs_data = {doc_id: doc for doc_id, doc in enumerate(docs)}
+    length = len(docs)
+    incidence = {"==Token==": [f"DocID{doc_id}" for doc_id in range(length)]}
+    all_tokens = set()
+    for data in docs_data.values():
+        all_tokens.update(data.split())
+    for token in all_tokens:
+        if token:
+            incidence[token] = [1 if token in docs_data[i].split() else 0 for i in range(length)]
+    return incidence
 
-def preprocess(text):
-    stop_words = set(stopwords.words('english'))
-    words = word_tokenize(text.lower())  # Tokenization and lowercasing
-    filtered_words = [word for word in words if word.isalnum() and word not in stop_words]
-    return filtered_words
+def query_incidence(incidence, query):
+    def process_query(tokens):
+        if not tokens: return None
+        and_results = []
+        i = 0
+        while i < len(tokens):
+            if tokens[i] == "AND":
+                prev_result = and_results.pop()
+                next_result = incidence[tokens[i + 1]]
+                and_results.append([a & b for a, b in zip(prev_result, next_result)])
+                i += 2
+            else:
+                if tokens[i] != "OR":
+                    and_results.append(incidence[tokens[i]])
+                i += 1
+        if len(and_results) == 1: return and_results[0]
+        return [any(results) for results in zip(*and_results)]
+    return process_query(query.split())
 
-def build_incidence_matrix(documents):
-    processed_docs = [preprocess(doc) for doc in documents]
-    vocabulary = sorted(set(word for doc in processed_docs for word in doc))
-
-    incidence_matrix = np.zeros((len(vocabulary), len(documents)), dtype=int)
-
-    for j, doc in enumerate(processed_docs):
-        for i, word in enumerate(vocabulary):
-            if word in doc:
-                incidence_matrix[i, j] = 1
-
-    return pd.DataFrame(incidence_matrix, index=vocabulary, columns=[f'Doc{j+1}' for j in range(len(documents))])
-
-# Example Documents
 documents = [
-    "The quick brown fox jumps over the lazy dog.",
-    "A fast fox and a sleepy dog were in the yard.",
-    "Dogs are very loyal animals and love their owners."
+    "Quick brown fox jumps over lazy dog",
+    "A fast fox and a sleepy dog were in the yard",
+    "Dogs are very loyal animals and love their owners"
 ]
 
-incidence_matrix_df = build_incidence_matrix(documents)
-print(incidence_matrix_df)
+incidence = incidence_matrix(documents)
+# [print(row) for row in incidence]
+[print(a,b) for a,b in incidence.items()]
+query = "Quick OR loyal"
+result = query_incidence(incidence, query)
+print(result)
