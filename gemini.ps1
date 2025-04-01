@@ -20,9 +20,6 @@ function Invoke-GeminiAI {
     $Instructions = @'
 SYSTEM INSTRUCTIONS:
 -Your goal is to provide ONLY code
--The code must be extremely compact and efficient (without losing out on functionality)
--Provide code strictly in python
--You may use these libraries: numpy, pandas, sklearn, nltk, requests, bs4, urllib and any default libraries
 -Codes should contain NO comments
 -Do NOT include any additional text, besides important steps (only if necessary for setup)
 '@
